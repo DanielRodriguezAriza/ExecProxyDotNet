@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace ExecProxy
 {
@@ -42,13 +43,31 @@ namespace ExecProxy
         {
             try
             {
-                ProcessStartInfo info = new ProcessStartInfo
+                ProcessStartInfo info;
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    FileName = name,
-                    Arguments = args,
-                    Verb = admin ? "runas" : "",
-                    UseShellExecute = true,
-                };
+                    // Use Windows' RunAs Verb to make the UAC prompt appear.
+                    ProcessStartInfo infoWin32 = new ProcessStartInfo
+                    {
+                        FileName = name,
+                        Arguments = args,
+                        Verb = admin ? "runas" : "",
+                        UseShellExecute = true,
+                    };
+                    info = infoWin32;
+                }
+                else
+                {
+                    // Can't use RunAs Verb in Unix systems such as Linux or macOS, since that's Windows only, so we use sudo and pray it works!
+                    ProcessStartInfo infoUnix = new ProcessStartInfo
+                    {
+                        FileName = "sudo",
+                        Arguments = $"{name} {args}",
+                        UseShellExecute = true,
+                    };
+                    info = infoUnix;
+                }
 
                 Process? process = Process.Start(info);
 
