@@ -54,6 +54,8 @@ namespace ExecProxy
                         Arguments = args,
                         Verb = admin ? "runas" : "",
                         UseShellExecute = true,
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        CreateNoWindow = true,
                     };
                     info = infoWin32;
                 }
@@ -65,6 +67,7 @@ namespace ExecProxy
                         FileName = "sudo",
                         Arguments = $"{name} {args}",
                         UseShellExecute = true,
+                        CreateNoWindow = true,
                     };
                     info = infoUnix;
                 }
