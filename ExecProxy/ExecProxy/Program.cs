@@ -26,7 +26,7 @@ namespace ExecProxy
         {
             string ans = "";
             // foreach (var arg in args)
-            for(int i = start; i < end; ++i)
+            for(int i = start; i <= end; ++i)
             {
                 var arg = args[i];
                 ans += $"\"{arg}\" ";
@@ -53,7 +53,10 @@ namespace ExecProxy
                         FileName = name,
                         Arguments = args,
                         Verb = admin ? "runas" : "",
-                        UseShellExecute = false,
+                        UseShellExecute = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        RedirectStandardInput = true,
                     };
                     info = infoWin32;
                 }
@@ -64,7 +67,10 @@ namespace ExecProxy
                     {
                         FileName = "sudo",
                         Arguments = $"{name} {args}",
-                        UseShellExecute = false,
+                        UseShellExecute = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        RedirectStandardInput = true,
                     };
                     info = infoUnix;
                 }
