@@ -39,7 +39,7 @@ namespace ExecProxy
             return JoinArgs(args, 0, args.Length - 1);
         }
 
-        static int RunProcessSyncInternal(string name, string args, bool admin)
+        static int RunProcessSync(string name, string args, bool admin)
         {
             try
             {
@@ -74,43 +74,15 @@ namespace ExecProxy
                 if (process == null)
                     return -1;
 
-                process.OutputDataReceived += (sender, e) =>
-                {
-                    if(e.Data != null)
-                        Console.Out.WriteLine(e.Data);
-                };
-
-                process.ErrorDataReceived += (sender, e) =>
-                {
-                    if(e.Data != null)
-                        Console.Error.WriteLine(e.Data);
-                };
-
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-
                 process.WaitForExit();
+                int ans = process.ExitCode;
                 process.Dispose();
-                return process.ExitCode;
+                return ans;
             }
             catch(Exception e)
             {
                 PrintLn($"Exception : {e.Message}");
                 return -2;
-            }
-        }
-
-        static int RunProcessSync(string name, string args, bool admin)
-        {
-            if (admin)
-            {
-                string currentProcessExecutableName = Environment.GetCommandLineArgs()[0];
-                string argsExtended = $"false {name} {args}";
-                return RunProcessSyncInternal(currentProcessExecutableName, argsExtended, true);
-            }
-            else
-            {
-                return RunProcessSyncInternal(name, args, false);
             }
         }
 
